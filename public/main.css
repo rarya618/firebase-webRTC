@@ -1,0 +1,146 @@
+body {
+    background: #ECEFF1;
+    color: rgba(0, 0, 0, 0.87);
+    font-family: Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+#message {
+    background: white;
+    max-width: 360px;
+    margin: 100px auto 16px;
+    padding: 32px 24px;
+    border-radius: 3px;
+}
+
+#message h2 {
+    color: #ffa100;
+    font-weight: bold;
+    font-size: 16px;
+    margin: 0 0 8px;
+}
+
+#message h1 {
+    font-size: 22px;
+    font-weight: 300;
+    color: rgba(0, 0, 0, 0.6);
+    margin: 0 0 16px;
+}
+
+#message p {
+    line-height: 140%;
+    margin: 16px 0 24px;
+    font-size: 14px;
+}
+
+#message a {
+    display: block;
+    text-align: center;
+    background: #039be5;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: white;
+    padding: 16px;
+    border-radius: 4px;
+}
+
+#message, #message a {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+#load {
+    color: rgba(0, 0, 0, 0.4);
+    text-align: center;
+    font-size: 13px;
+}
+
+@media (max-width: 600px) {
+    body, #message {
+        margin-top: 0;
+        background: white;
+        box-shadow: none;
+    }
+
+    body {
+        border-top: 16px solid #ffa100;
+    }
+}
+
+body {
+    margin: 1em;
+}
+
+input {
+    padding: 12px;
+    background: #f5f5f5;
+    margin: 0 0.2em 1em 0.2em;
+    min-width: 200px;
+}
+
+button, input {
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
+}
+
+button {
+    background: #4caf20;
+    color: #fff;
+    margin: 0.2em;
+    padding: 12px 24px;
+    cursor: pointer;
+}
+
+button:disabled {
+    opacity: 0.2;
+    background: #fff;
+    color: grey;
+    cursor: not-allowed;
+}
+
+button:disabled {
+    opacity: 0.5;
+    background: #fff;
+}
+
+div#videos {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin: 0.1em;
+}
+
+div#videos > video {
+    background: black;
+    width: 49%;
+    height: 480px;
+    display: block;
+    margin: 1em 1% 1em 0;
+    border-radius: 5px;
+}
+
+.dialog {
+    display: flex;
+    width: 100%;
+    align-items: center;
+}
+
+.dialog-container {
+    background: #fff;
+    position: fixed;
+    padding: 5px 15px 15px 15px;
+    border-radius: 5px;
+    right: 25px;
+    bottom: 25px;
+}
+
+.white-btn {
+    background: #fff;
+    color: #4caf20;
+    outline: solid 1px #ccc;
+}
+
+#joinDialog {
+    /* display: none; */
+}
