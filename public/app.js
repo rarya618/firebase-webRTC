@@ -26,7 +26,9 @@ function init() {
 async function createMeeting() {
   document.querySelector('#createBtn').disabled = true;
   document.querySelector('#joinBtn').disabled = true;
+
   const db = firebase.firestore();
+  
   const meetingRef = await db.collection('meetings').doc();
 
   console.log('Create PeerConnection with configuration: ', configuration);
@@ -38,7 +40,7 @@ async function createMeeting() {
     peerConnection.addTrack(track, localStream);
   });
 
-  // Code for collecting ICE candidates below
+  // collecting ICE candidates
   const hostCandidatesCollection = meetingRef.collection('hostCandidates');
 
   peerConnection.addEventListener('icecandidate', event => {
@@ -49,9 +51,8 @@ async function createMeeting() {
     console.log('Got candidate: ', event.candidate);
     hostCandidatesCollection.add(event.candidate.toJSON());
   });
-  // Code for collecting ICE candidates above
 
-  // Code for creating a meeting below
+  // creating a meeting
   const offer = await peerConnection.createOffer();
   await peerConnection.setLocalDescription(offer);
   console.log('Created offer:', offer);
@@ -62,12 +63,12 @@ async function createMeeting() {
       sdp: offer.sdp,
     },
   };
+
   await meetingRef.set(meetingWithOffer);
   meetingId = meetingRef.id;
   console.log(`New meeting created with SDP offer. meeting ID: ${meetingRef.id}`);
   document.querySelector(
       '#currentMeeting').innerText = `Meeting ID: ${meetingRef.id} - You are the host!`;
-  // Code for creating a meeting above
 
   peerConnection.addEventListener('track', event => {
     console.log('Got remote track:', event.streams[0]);
@@ -77,7 +78,7 @@ async function createMeeting() {
     });
   });
 
-  // Listening for remote session description below
+  // Listening for remote session description
   meetingRef.onSnapshot(async snapshot => {
     const data = snapshot.data();
     if (!peerConnection.currentRemoteDescription && data && data.answer) {
@@ -86,9 +87,8 @@ async function createMeeting() {
       await peerConnection.setRemoteDescription(rtcSessionDescription);
     }
   });
-  // Listening for remote session description above
 
-  // Listen for remote ICE candidates below
+  // Listen for remote ICE candidates
   meetingRef.collection('participantCandidates').onSnapshot(snapshot => {
     snapshot.docChanges().forEach(async change => {
       if (change.type === 'added') {
@@ -98,7 +98,6 @@ async function createMeeting() {
       }
     });
   });
-  // Listen for remote ICE candidates above
 }
 
 function joinMeeting() {
@@ -136,7 +135,7 @@ async function joinMeetingById(meetingId) {
       peerConnection.addTrack(track, localStream);
     });
 
-    // Code for collecting ICE candidates below
+    // collecting ICE candidates
     const participantCandidatesCollection = meetingRef.collection('participantCandidates');
     peerConnection.addEventListener('icecandidate', event => {
       if (!event.candidate) {
@@ -146,7 +145,6 @@ async function joinMeetingById(meetingId) {
       console.log('Got candidate: ', event.candidate);
       participantCandidatesCollection.add(event.candidate.toJSON());
     });
-    // Code for collecting ICE candidates above
 
     peerConnection.addEventListener('track', event => {
       console.log('Got remote track:', event.streams[0]);
@@ -156,7 +154,7 @@ async function joinMeetingById(meetingId) {
       });
     });
 
-    // Code for creating SDP answer below
+    // creating SDP answer
     const offer = meetingSnapshot.data().offer;
     console.log('Got offer:', offer);
     await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
@@ -170,10 +168,10 @@ async function joinMeetingById(meetingId) {
         sdp: answer.sdp,
       },
     };
-    await meetingRef.update(meetingWithAnswer);
-    // Code for creating SDP answer above
 
-    // Listening for remote ICE candidates below
+    await meetingRef.update(meetingWithAnswer);
+
+    // Listening for remote ICE candidates
     meetingRef.collection('hostCandidates').onSnapshot(snapshot => {
       snapshot.docChanges().forEach(async change => {
         if (change.type === 'added') {
@@ -183,7 +181,6 @@ async function joinMeetingById(meetingId) {
         }
       });
     });
-    // Listening for remote ICE candidates above
   }
 }
 
@@ -216,6 +213,7 @@ async function leaveMeeting(e) {
     peerConnection.close();
   }
 
+  // cleanup elements for fresh start
   document.querySelector('#localVideo').srcObject = null;
   document.querySelector('#remoteVideo').srcObject = null;
   document.querySelector('#cameraBtn').disabled = false;
@@ -228,10 +226,12 @@ async function leaveMeeting(e) {
   if (meetingId) {
     const db = firebase.firestore();
     const meetingRef = db.collection('meetings').doc(meetingId);
+    
     const participantCandidates = await meetingRef.collection('participantCandidates').get();
     participantCandidates.forEach(async candidate => {
       await candidate.ref.delete();
     });
+    
     const hostCandidates = await meetingRef.collection('hostCandidates').get();
     hostCandidates.forEach(async candidate => {
       await candidate.ref.delete();
